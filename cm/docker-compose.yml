@@ -2,19 +2,19 @@ version: "3"
 services:
   db:
     build: ../db
-    container_name: recipedb
+    container_name: db
     restart: always
     ports:
       - "5432:5432"
     volumes:
-      - recipe-data:/var/lib/postgresql/data
-  api:
+      - map-data:/var/lib/postgresql/data
+  pyapi:
     depends_on:
       - db
-    build: ../api
-    container_name: api
+    build: ../pyapi
+    container_name: pyapi
     ports:
-      - "5000:5000"
+      - "5000:80"
 #  front:
 #    depends_on:
 #      - db
@@ -24,4 +24,4 @@ services:
 #    ports:
 #      - "3000:3000"
 volumes:
-  recipe-data: {}
+  map-data: {}

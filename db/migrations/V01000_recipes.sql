@@ -1,51 +1,41 @@
-CREATE TABLE recipe (
+CREATE TABLE map (
     id SERIAL PRIMARY KEY,
     title VARCHAR(200) NOT NULL,
-    origin VARCHAR(100)
+    description VARCHAR(500),
+    created TIMESTAMP NOT NULL,
+    last_update TIMESTAMP NOT NULL
 );
 
-CREATE TYPE UOM AS ENUM (
-    'cup',
-    'tsp',
-    'tbsp',
-    'oz',
-    'lb',
-    'g',
-    'kg',
-    'count',
-    'pinch',
-    'qt',
-    'pt'
+CREATE TYPE SHAPE AS ENUM (
+    'circle',
+    'square',
+    'triangle',
+    'character'
 );
 
-CREATE TABLE ingredient (
+CREATE TABLE coordinates (
     id BIGSERIAL PRIMARY KEY,
-    recipe_id INTEGER REFERENCES recipe(id),
-    name VARCHAR(100),
-    quantity DECIMAL,
-    units UOM
+    map_id INTEGER REFERENCES map(id),
+    x INTEGER NOT NULL,
+    y INTEGER NOT NULL,
+    description VARCHAR(500),
+    symbol CHAR,
+    shape SHAPE,
+    red INTEGER,
+    green INTEGER,
+    blue INTEGER
 );
 
-CREATE TABLE step (
-    id BIGSERIAL PRIMARY KEY,
-    recipe_id INTEGER REFERENCES recipe(id),
-    step_no INTEGER NOT NULL,
-    description VARCHAR(500)
-);
-
-CREATE TABLE note (
-    id BIGSERIAL PRIMARY KEY,
-    recipe_id INTEGER REFERENCES recipe(id),
-    note_no INTEGER NOT NULL,
-    description VARCHAR(500)
-);
-
-INSERT INTO recipe (title, origin) VALUES ('Aloo Palak', 'India');
-INSERT INTO ingredient (recipe_id, name, quantity, units) VALUES (1, 'Potatoes', 2, 'count');
-INSERT INTO ingredient (recipe_id, name, quantity, units) VALUES (1, 'Spinach', 9, 'oz');
-INSERT INTO step (recipe_id, step_no, description) VALUES (1, 1, 'Put oil and cumin seeds into a fry and heat to a sizzle.');
-INSERT INTO step (recipe_id, step_no, description) VALUES (1, 2, 'Add red chili, hing and something else...');
-
-
-
+INSERT INTO map (title, description, created, last_update)
+    VALUES ('test map', 'map to test with', current_timestamp, current_timestamp);
+INSERT INTO map (title, description, created, last_update)
+    VALUES ('test map 2', 'another map to test with', current_timestamp, current_timestamp);
+INSERT INTO coordinates (map_id, x, y, description)
+    VALUES (1, 100, 100, 'test coordinates');
+INSERT INTO coordinates (map_id, x, y, description)
+    VALUES (1, -100, 200, 'test coordinates');
+INSERT INTO coordinates (map_id, x, y, description)
+    VALUES (2, 300, -200, 'test coordinates');
+INSERT INTO coordinates (map_id, x, y, description)
+    VALUES (2, -175, 900, 'test coordinates');
 -- Make a view to extract all the unique ingredients
