@@ -2,6 +2,8 @@ from fastapi import FastAPI
 from starlette.responses import JSONResponse
 import psycopg2
 import pandas as pd
+from settings import logs
+import logging
 from models import map
 
 app = FastAPI()
@@ -19,20 +21,27 @@ def read_root():
     info = {
         "Hello": "Server is running"
     }
-
+    logging.debug("*****************\nClient query root\n***************")
     return JSONResponse(content=info, headers=headers)
 
 
 @app.get("/map")
 def get_map_data():
     map_obj = map.Map()
-    return JSONResponse(content=map_obj.get_all_in_dict(), headers=headers)
+    return JSONResponse(content=map_obj.get_all(), headers=headers)
 
 
 @app.get("/map/{map_id}")
 def get_map_coordinates(map_id: int):
-    conn = psycopg2.connect(conn_string)
-    sql_command = "SELECT * FROM coordinates WHERE map_id = {}".format(map_id)
-    data = pd.read_sql(sql_command, conn)
-    data_dict = data.to_dict()
-    return JSONResponse(content=data_dict, headers=headers)
+    map_obj = map.Map()
+    coordinates = map_obj.get_map_coordinates(map_id)
+    return JSONResponse(content=coordinates, headers=headers)
+
+
+@app.post("/map/add")
+def create_new_map(new_map: map.MapType):
+    map_obj = map.Map()
+    result = map_obj.create_map(new_map)
+    logging.debug("Result from create_map: {}".format(result))
+    response = {"title": result["title"], "description": result["description"]}
+    return JSONResponse(content=response, headers=headers)
